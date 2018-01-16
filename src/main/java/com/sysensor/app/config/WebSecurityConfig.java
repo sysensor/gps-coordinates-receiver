@@ -19,13 +19,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public static String REALM = "SYSENSOR";
     public static final String ROLE_ADMIN = "ADMIN";
     public static final String ROLE_USER = "USER";
-    public static final String ROLE_CLIENT = "CLIENT";
 
     @Autowired
     public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication().withUser("admin").password("admin").roles(ROLE_ADMIN);
         auth.inMemoryAuthentication().withUser("user").password("user").roles(ROLE_USER);
-        auth.inMemoryAuthentication().withUser("dinuka").password("123").roles(ROLE_CLIENT);
     }
 
     @Override
@@ -33,8 +31,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.csrf().disable()
                 .authorizeRequests()
-                //.antMatchers(APIConfig.API + "/**").hasRole(ROLE_ADMIN)
-                .antMatchers("/**").hasAnyRole(ROLE_USER, ROLE_ADMIN)
+                .antMatchers(APIConfig.API + "/**").hasAnyRole(ROLE_USER, ROLE_ADMIN)
                 .and().httpBasic().realmName(REALM).authenticationEntryPoint(getBasicAuthEntryPoint())
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }

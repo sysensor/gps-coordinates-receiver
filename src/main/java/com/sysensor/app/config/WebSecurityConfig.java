@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -13,15 +14,18 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public static String REALM = "SYSENSOR";
-    private static String ROLE_ADMIN = "ADMIN";
-    private static String ROLE_USER = "USER";
+    public static final String ROLE_ADMIN = "ADMIN";
+    public static final String ROLE_USER = "USER";
+    public static final String ROLE_CLIENT = "CLIENT";
 
     @Autowired
     public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication().withUser("admin").password("admin").roles(ROLE_ADMIN);
         auth.inMemoryAuthentication().withUser("user").password("user").roles(ROLE_USER);
+        auth.inMemoryAuthentication().withUser("dinuka").password("123").roles(ROLE_CLIENT);
     }
 
     @Override
@@ -29,7 +33,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers(APIConfig.API + "/**").hasRole(ROLE_ADMIN)
+                //.antMatchers(APIConfig.API + "/**").hasRole(ROLE_ADMIN)
                 .antMatchers("/**").hasAnyRole(ROLE_USER, ROLE_ADMIN)
                 .and().httpBasic().realmName(REALM).authenticationEntryPoint(getBasicAuthEntryPoint())
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

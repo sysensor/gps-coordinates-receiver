@@ -1,11 +1,17 @@
 package com.sysensor.app.controller;
 
 import com.sysensor.app.config.APIConfig;
+import com.sysensor.app.config.WebSecurityConfig;
 import com.sysensor.app.model.Location;
 import org.apache.log4j.Logger;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.security.RolesAllowed;
 
 @RestController
 @RequestMapping(APIConfig.API)
@@ -26,7 +32,8 @@ public class GPSSignalAPI {
     }
 
     @RequestMapping(value = "/signal", method = RequestMethod.POST, consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
-    public Location postSignal(Location location) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public Location postSignal(@RequestBody Location location) {
         LOG.info(location.toString());
         return location;
     }

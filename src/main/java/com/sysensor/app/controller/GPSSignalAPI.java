@@ -3,11 +3,9 @@ package com.sysensor.app.controller;
 import com.sysensor.app.config.APIConfig;
 import com.sysensor.app.model.Location;
 import org.apache.log4j.Logger;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(APIConfig.API)
@@ -17,8 +15,15 @@ public class GPSSignalAPI {
 
     Logger LOG = Logger.getLogger(this.getClass());
 
+    public void printHeaders(@RequestHeader HttpHeaders headers){
+        headers.forEach((k, v) ->
+                LOG.info(k + "-" + v)
+        );
+    }
+
     @RequestMapping(value = "/signal", method = RequestMethod.GET, produces = APPLICATION_JSON)
-    public Location getLatestSignal() {
+    public Location getLatestSignal(@RequestHeader HttpHeaders headers) {
+        printHeaders(headers);
         Location location = new Location();
         location.setLat("41.619549");
         location.setLng("-93.598022");
@@ -29,7 +34,8 @@ public class GPSSignalAPI {
 
     @RequestMapping(value = "/signal", method = RequestMethod.POST, consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @PreAuthorize("hasRole('ADMIN')")
-    public Location postSignal(@RequestBody Location location) {
+    public Location postSignal(@RequestHeader HttpHeaders headers, @RequestBody Location location) {
+        printHeaders(headers);
         LOG.info(location.toString());
         return location;
     }
